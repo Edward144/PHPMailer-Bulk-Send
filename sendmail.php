@@ -62,8 +62,6 @@
     $mail->isHTML(true);
     $mail->Subject = $passed["subject"];
     $mail->Body = file_get_contents($passed["content"]);
-    
-    echo $passed["subject"] . "\n\n";
 
     //Store debug information
     $sendEmailDebug = "";
