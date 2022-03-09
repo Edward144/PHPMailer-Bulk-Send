@@ -1,5 +1,9 @@
 <?php
 
+ini_set("display_errors", 1);
+ini_set("display_startup_errors", 1);
+error_reporting(E_ALL);
+
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
@@ -53,7 +57,7 @@
     elseif(empty($passed["content"])) {
         die($colours["red"] . "An html content file is required\n" . $colours["default"]);
     }
-    elseif(!file_exists($passed["content"]) || pathinfo($passed["content"])["extension"] !== "html") {
+    elseif(!file_exists(__DIR__ . "/content/" . $passed["content"]) || pathinfo(__DIR__ . "/content/" . $passed["content"])["extension"] !== "html") {
         die($colours["red"] . "The html content file does not exist, or you have passed an invalid filetype\n" . $colours["default"]);
     }
 
@@ -61,17 +65,17 @@
     $mail = new PHPMailer();
     $mail->isHTML(true);
     $mail->Subject = $passed["subject"];
-    $mail->Body = file_get_contents($passed["content"]);
+    $mail->Body = file_get_contents(__DIR__ . "/content/" . $passed["content"]);
 
     //Store debug information
-    $sendEmailDebug = "";
+    $debugOutput = "test";
     $debugDirectory = "logs";
-    $debugFilename = date("YmdHis") . ".json";
+    $debugFilename = date("YmdHis") . ".txt";
 
     $mail->SMTPDebug = 3;
     $mail->Debugoutput = function($output, $level) {
-        global $sendEmailDebug;
-        $sendEmailDebug .= $level . ": " . $output;
+        global $debugOutput;
+        $debugOutput .= $level . ": " . $output;
     };
 
     //Add attachments
@@ -125,8 +129,8 @@
     }
 
     //Set from address
-    $fromAddress = (!empty($passed['from_address']) ? $passed['from_address'] : (!empty($addresses['from_address']) ? $addresses['from_address']: ''));
-    $fromFriendly = (!empty($passed['from_friendly']) ? $passed['from_friendly'] : (!empty($addresses['from_friendly']) ? $addresses['from_friendly']: ''));
+    $fromAddress = (!empty($passed["from_address"]) ? $passed["from_address"] : (!empty($addresses["from_address"]) ? $addresses["from_address"]: ""));
+    $fromFriendly = (!empty($passed["from_friendly"]) ? $passed["from_friendly"] : (!empty($addresses["from_friendly"]) ? $addresses["from_friendly"]: ""));
 
     if(!empty($formAddress) && !empty($fromFriendly)) {
         $mail->setFrom($fromAddress, $fromFriendly);
@@ -135,15 +139,15 @@
         $mail->setFrom($fromAddress);
     }
     elseif(!empty($fromFriendly)) {
-        $mail->setFrom('noreply@' . php_uname("n"), $fromFriendly);
+        $mail->setFrom("noreply@" . php_uname("n"), $fromFriendly);
     }
     else {
-        $mail->setFrom('noreply@' . php_uname("n"));
+        $mail->setFrom("noreply@" . php_uname("n"));
     }
 
     //Set reply to address
-    $replyAddress = (!empty($passed['reply_address']) ? $passed['reply_address'] : (!empty($addresses['reply_address']) ? $addresses['reply_address']: ''));
-    $replyFriendly = (!empty($passed['reply_friendly']) ? $passed['reply_friendly'] : (!empty($addresses['reply_friendly']) ? $addresses['reply_friendly ']: ''));
+    $replyAddress = (!empty($passed["reply_address"]) ? $passed["reply_address"] : (!empty($addresses["reply_address"]) ? $addresses["reply_address"]: ""));
+    $replyFriendly = (!empty($passed["reply_friendly"]) ? $passed["reply_friendly"] : (!empty($addresses["reply_friendly"]) ? $addresses["reply_friendly "]: ""));
 
     if(!empty($replyAddress) && !empty($replyFriendly)) {
         $mail->addReplyTo($replyAddress, $replyFriendly);
@@ -152,8 +156,36 @@
         $mail->addReplyTo($replyAddress);
     }
 
+    //Add CCs
+    if(!empty($passed["cc"])) {
+        $ccs = explode(",", rtrim($passed["cc"], ","));
+    }
+
+    //Add BCCs
+    if(!empty($passed["bcc"])) {
+        $bccs = explode(",", rtrim($passed["bcc"], ","));
+    }
+
     //Send the mail
-    if(strpos($passed["to"], ",") !== false) {
+    if(strpos($passed["to"], ".json") !== false) {
+        $toFile = __DIR__ . "/" . $passed["to"];
+        
+        if(file_exists($toFile)) {
+            $tos = [];
+            $fc = file_get_contents($toFile);
+            $json = json_decode($fc, true);
+
+            if(!empty($json)) {
+                foreach($json as $to) {
+                    array_push($tos, $to);
+                }
+            }
+        }
+        else {
+            die($colours["red"] . "Supplied json file for to addresses does not exist\n" . $colours["default"]);
+        }
+    }
+    elseif(strpos($passed["to"], ",") !== false) {
         $tos = explode(",", rtrim($passed["to"], ","));
     }
     else {
@@ -161,19 +193,33 @@
     }
 
     foreach($tos as $to) {
-        $mail->setTo = $to;
+        $mail->clearAllRecipients();
+        $mail->addAddress($to);
+
+        if(!empty($ccs)) {
+            foreach($ccs as $cc) {
+                $mail->addCC($cc);
+            }
+        }
+
+        if(!empty($bccs)) {
+            foreach($bccs as $bcc) {
+                $mail->addBCC($bcc);
+            }
+        }
 
         if($mail->send()) {
             echo $colours["green"] . "Successfully sent to: " . $to . "\n" . $colours["default"];
         }
         else {
             echo $colours["yellow"] . "Failed sending to: " . $to . "\n" . $colours["default"];
+            echo $mail->ErrorInfo . "\n\n";
         }
     }
 
     //Log the PHPMailer debug output
     if(isset($passed["log"]) && $passed["log"] === "false") {
-        echo "\n" . $colours["cyan"] . "Skipping log\n" . $colours["default"];
+        echo $colours["cyan"] . "Skipping log\n" . $colours["default"];
     }
     else {
         if(!is_dir($debugDirectory)) {
@@ -183,7 +229,7 @@
         $fp = fopen(__DIR__ . "/" . $debugDirectory . "/" . $debugFilename, "w");
 
         if($fp) {
-            fwrite($fp, $sendEmailDebug);
+            fwrite($fp, $debugOutput);
             fclose($fp);
 
             echo "\n" . $colours["cyan"] . "Logging as filename: " . $debugDirectory . "/" . $debugFilename . "\n" . $colours["default"];
