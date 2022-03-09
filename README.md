@@ -9,7 +9,7 @@ When running the script you can pass various parameters by adding each one seper
 `php sendmail.php key1=value1 key2=value2 key3=value3`
 
 The list of accepted parameters is:
-* to - A single email address or comma separated list of addresses. **This is a required parameter.**
+* to - A single email address, comma separated list of addresses, or json file containing an array of email addresses. **This is a required parameter.**
 * subject - The subject to be used in the email. **This is a required parameter.**
 * content - A html file containing the body of the email, stored within the content directory. **This is a required parameter and must be a html file, others will not be accepted.**
 * cc - A single email address or comma separated list of addresses.
@@ -49,6 +49,15 @@ Make sure that you leave no spaces in between each email address, surrounding th
 You can leave a trailing comma at the end of the list as this will be removed automatically.
 
 When providing multiple email addresses a separate email is sent out to each individual email address. Each recipient will not see the others. 
+
+If supplying a json file provide the full path to the file from the installation root directory. For example:
+
+> myfile.json
+> mydirectory/myfile.json
+
+The json file should contain a simple array of emails:
+
+`["email1@domain.com", "email2@domain.com", "email3@gmail.com"]`
 
 ## BCC and CC email addresses
 
