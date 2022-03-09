@@ -147,7 +147,7 @@ error_reporting(E_ALL);
 
     //Set reply to address
     $replyAddress = (!empty($passed["reply_address"]) ? $passed["reply_address"] : (!empty($addresses["reply_address"]) ? $addresses["reply_address"]: ""));
-    $replyFriendly = (!empty($passed["reply_friendly"]) ? $passed["reply_friendly"] : (!empty($addresses["reply_friendly"]) ? $addresses["reply_friendly "]: ""));
+    $replyFriendly = (!empty($passed["reply_friendly"]) ? $passed["reply_friendly"] : (!empty($addresses["reply_friendly"]) ? $addresses["reply_friendly"]: ""));
 
     if(!empty($replyAddress) && !empty($replyFriendly)) {
         $mail->addReplyTo($replyAddress, $replyFriendly);
