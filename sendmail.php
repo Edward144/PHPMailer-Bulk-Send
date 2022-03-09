@@ -135,10 +135,10 @@
         $mail->setFrom($fromAddress);
     }
     elseif(!empty($fromFriendly)) {
-        $mail->setFrom('noreply@' . $_SERVER['SERVER_NAME'], $fromFriendly);
+        $mail->setFrom('noreply@' . php_uname("n"), $fromFriendly);
     }
     else {
-        $mail->setFrom('noreply@' . $_SERVER['SERVER_NAME']);
+        $mail->setFrom('noreply@' . php_uname("n"));
     }
 
     //Set reply to address
