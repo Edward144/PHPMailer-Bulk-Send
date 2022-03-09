@@ -4,7 +4,7 @@
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
 
-    require_once(dirname(__DIR__) . '/vendor/autoload.php');
+    require_once('vendor/autoload.php');
 
     (PHP_SAPI !== 'cli' || isset($_SERVER['HTTP_USER_AGENT'])) && die('Must run via CLI');
 
