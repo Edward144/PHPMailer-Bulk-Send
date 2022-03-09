@@ -4,3 +4,4 @@ attachments/*
 !attachments/.gitkeep
 content/*
 !content/.gitkeep
+*.json
