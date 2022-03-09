@@ -2,3 +2,5 @@ logs/*
 !logs/.gitkeep
 attachments/*
 !attachments/.gitkeep
+content/*
+!content/.gitkeep

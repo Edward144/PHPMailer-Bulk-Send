@@ -11,7 +11,7 @@ When running the script you can pass various parameters by adding each one seper
 The list of accepted parameters is:
 * to - A single email address or comma separated list of addresses. **This is a required parameter.**
 * subject - The subject to be used in the email. **This is a required parameter.**
-* content - A html file containing the body of the email. **This is a required parameter and must be a html file, others will not be accepted.**
+* content - A html file containing the body of the email, stored within the content directory. **This is a required parameter and must be a html file, others will not be accepted.**
 * cc - A single email address or comma separated list of addresses.
 * bcc - A single email address or comma separated list of addresses.
 * attachments - A comma separated list of attachments to be included with the email. 
