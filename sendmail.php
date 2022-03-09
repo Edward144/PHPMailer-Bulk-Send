@@ -132,7 +132,7 @@ error_reporting(E_ALL);
     $fromAddress = (!empty($passed["from_address"]) ? $passed["from_address"] : (!empty($addresses["from_address"]) ? $addresses["from_address"]: ""));
     $fromFriendly = (!empty($passed["from_friendly"]) ? $passed["from_friendly"] : (!empty($addresses["from_friendly"]) ? $addresses["from_friendly"]: ""));
 
-    if(!empty($formAddress) && !empty($fromFriendly)) {
+    if(!empty($fromAddress) && !empty($fromFriendly)) {
         $mail->setFrom($fromAddress, $fromFriendly);
     }
     elseif(!empty($fromAddress)) {
