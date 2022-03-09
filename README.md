@@ -36,7 +36,7 @@ You can also supply these details via the commandline parameters. If both the **
 
 ## Reply and From addresses
 
-The reply_address, reply_friendlt, from_address and from_friendly parameters can all be set within the **smtp_credentials.php** file. As these will generally be used alongside an SMTP service and you may not wish to have to set them every time. 
+The reply_address, reply_friendly, from_address and from_friendly parameters can all be set within the **smtp_credentials.php** file. As these will generally be used alongside an SMTP service and you may not wish to have to set them every time. 
 
 If both the **smtp_credentials.php** file and the inline CLI parameters are supplied, then the CLI parameters will override the file.
 
