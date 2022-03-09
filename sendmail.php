@@ -10,7 +10,7 @@
 
     if(isset($argc)) {
         for($i = 0; $i < $argc; $i++) {
-            echo $argv[$i] . "\n";
+            echo $i . ' ' . $argv[$i] . "\n";
         }
     }
     else {
